@@ -1,4 +1,6 @@
 pyrogram==2.0.106
+Flask
+flask_restful
 tgcrypto==1.2.5
 git+https://github.com/yt-dlp/yt-dlp@63e0c5748c0eb461a2ccca4181616eb930b4b750
 APScheduler==3.10.4
