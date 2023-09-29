@@ -256,6 +256,7 @@ def download_instagram(url: str, tempdir: str):
         logging.info("Requesting instagram download link for %s", url)
         api = SS_YOUTUBE + f"&url={url}"
         res = requests.get(api).json()
+        print(res)
         if isinstance(res, dict):
             downloadable = {i["url"]: i["ext"] for i in res["url"]}
         else:
