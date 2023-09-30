@@ -135,7 +135,7 @@ def forward_video(client, bot_msg, url: str):
 
     caption, _ = gen_cap(bot_msg, url, obj)
     res_msg.edit_text(caption, reply_markup=gen_video_markup())
-    bot_msg.edit_text(f"Download success!✅✅✅")
+    bot_msg.edit_text(f"نجح التحميل!✅✅✅")
     redis.update_metrics("cache_hit")
     return True
 
@@ -154,7 +154,7 @@ def ytdl_download_entrance(client: Client, bot_msg: types.Message, url: str, mod
             ytdl_normal_download(client, bot_msg, url)
     except Exception as e:
         logging.error("Failed to download %s, error: %s", url, e)
-        bot_msg.edit_text(f"Download failed!❌\n\n`{traceback.format_exc()[0:4000]}`", disable_web_page_preview=True)
+        bot_msg.edit_text(f"فشل التنزيل!❌\n\n`{traceback.format_exc()[0:4000]}`\nوجه الرسالة للمطور @ri2da", disable_web_page_preview=True)
 
 
 def direct_download_entrance(client: Client, bot_msg: typing.Union[types.Message, typing.Coroutine], url: str):
@@ -188,7 +188,7 @@ def direct_normal_download(client: Client, bot_msg: typing.Union[types.Message, 
     except TypeError:
         filename = getattr(req, "url", "").rsplit("/")[-1]
     except Exception as e:
-        bot_msg.edit_text(f"Download failed!❌\n\n```{e}```", disable_web_page_preview=True)
+        bot_msg.edit_text(f"فشل التنزيل!❌\n\n```{e}```\nوجه الرسالة للمطور @ri2da", disable_web_page_preview=True)
         return
 
     if not filename:
@@ -211,29 +211,29 @@ def direct_normal_download(client: Client, bot_msg: typing.Union[types.Message, 
         client.send_document(
             bot_msg.chat.id,
             filepath,
-            caption=f"filesize: {sizeof_fmt(st_size)}",
+            caption=f"{sizeof_fmt(st_size)} :حجم الملف",
             progress=upload_hook,
             progress_args=(bot_msg,),
         )
-        bot_msg.edit_text("Download success!✅")
+        bot_msg.edit_text("نجح التنزيل!✅")
 
 
 def normal_audio(client: Client, bot_msg: typing.Union[types.Message, typing.Coroutine]):
     chat_id = bot_msg.chat.id
     # fn = getattr(bot_msg.video, "file_name", None) or getattr(bot_msg.document, "file_name", None)
     status_msg: typing.Union[types.Message, typing.Coroutine] = bot_msg.reply_text(
-        "Converting to audio...please wait patiently", quote=True
+        "يتم التحويل الى صوت ...يرجى الانتضار", quote=True
     )
     orig_url: str = re.findall(r"https?://.*", bot_msg.caption)[0]
     with tempfile.TemporaryDirectory(prefix="ytdl-", dir=TMPFILE_PATH) as tmp:
         client.send_chat_action(chat_id, enums.ChatAction.RECORD_AUDIO)
         # just try to download the audio using yt-dlp
         filepath = ytdl_download(orig_url, tmp, status_msg, hijack="bestaudio[ext=m4a]")
-        status_msg.edit_text("Sending audio now...")
+        status_msg.edit_text("يتم إرسال الملف الصوتي...")
         client.send_chat_action(chat_id, enums.ChatAction.UPLOAD_AUDIO)
         for f in filepath:
             client.send_audio(chat_id, f)
-        status_msg.edit_text("✅ Conversion complete.")
+        status_msg.edit_text("✅ تم التحويل.")
         Redis().update_metrics("audio_success")
 
 
@@ -250,10 +250,10 @@ def upload_transfer_sh(bm, paths: list) -> str:
     headers = {"Content-Type": monitor.content_type}
     try:
         req = requests.post("https://transfer.sh", data=monitor, headers=headers)
-        bm.edit_text(f"Download success!✅")
+        bm.edit_text(f"نجح التنزيل!✅")
         return re.sub(r"https://", "\nhttps://", req.text)
     except requests.exceptions.RequestException as e:
-        return f"Upload failed!❌\n\n```{e}```"
+        return f"فشل الرفع!❌\n\n```{e}```\nوجه الرسالة للمطور @ri2da"
 
 
 def flood_owner_message(client, ex):
@@ -267,20 +267,20 @@ def ytdl_normal_download(client: Client, bot_msg: typing.Union[types.Message, ty
     video_paths = ytdl_download(url, temp_dir.name, bot_msg)
     logging.info("Download complete.")
     client.send_chat_action(chat_id, enums.ChatAction.UPLOAD_DOCUMENT)
-    bot_msg.edit_text("Download complete. Sending now...")
+    bot_msg.edit_text("...تم التنزيل يجري الإرسال")
     try:
         upload_processor(client, bot_msg, url, video_paths)
     except pyrogram.errors.FloodWait as e:
         logging.critical("FloodWait from Telegram: %s", e)
         client.send_message(
             chat_id,
-            f"I'm being rate limited by Telegram. Your video will come after {e.value} seconds. Please wait patiently.",
+            f"..يرجى الانتضار {e.value} قام التيليجرام بحظري. ساقوم بأرسال الفيديو الخاص بك بعد",
         )
         flood_owner_message(client, e)
         time.sleep(e.value)
         upload_processor(client, bot_msg, url, video_paths)
 
-    bot_msg.edit_text("Download success!✅")
+    bot_msg.edit_text("نجح التنزيل!✅")
 
     # setup rclone environment var to back up the downloaded file
     if RCLONE_PATH:
@@ -451,7 +451,7 @@ def gen_cap(bm, url, video_path):
 
 def gen_video_markup():
     markup = InlineKeyboardMarkup(
-        [[InlineKeyboardButton("convert to audio", callback_data="convert")]]
+        [[InlineKeyboardButton("تحويل الى صوت", callback_data="convert")]]
     )  # First row  # Generates a callback query when pressed
     return markup
 
