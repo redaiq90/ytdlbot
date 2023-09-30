@@ -213,7 +213,8 @@ def ping_handler(client: Client, message: types.Message):
         stats = BotText.ping_worker()[:1000]
         client.send_document(chat_id, redis.generate_file(), caption=f"{bot_info}\n\n{stats}")
     else:
-        client.send_message(chat_id, f"{bot_info.split('CPU')[0]}")
+        
+        client.send_document(chat_id, "لا تخاف البوت سريع ما يحتاج بنگ")
 
 
 @app.on_message(filters.command(["sub_count"]))
@@ -235,10 +236,10 @@ def direct_handler(client: Client, message: types.Message):
     logging.info("direct start %s", url)
     if not re.findall(r"^https?://", url.lower()):
         redis.update_metrics("bad_request")
-        message.reply_text("Send me a DIRECT LINK.", quote=True)
+        message.reply_text("ارسل رابط مباشر", quote=True)
         return
 
-    bot_msg = message.reply_text("Request received.", quote=True)
+    bot_msg = message.reply_text("يتم التنزيل.", quote=True)
     redis.update_metrics("direct_request")
     direct_download_entrance(client, bot_msg, url)
 
