@@ -252,23 +252,23 @@ def settings_handler(client: Client, message: types.Message):
     data = MySQL().get_user_settings(chat_id)
     set_mode = data[-1]
     text = {"Local": "Celery", "Celery": "Local"}.get(set_mode, "Local")
-    mode_text = f"Download mode: **{set_mode}**"
+    mode_text = f"**{set_mode}** :نوع التنزيل"
     if message.chat.username == OWNER or payment.get_pay_token(chat_id):
-        extra = [InlineKeyboardButton(f"Change download mode to {text}", callback_data=text)]
+        extra = [InlineKeyboardButton(f"{text} تغيير نوع التنزيل الى", callback_data=text)]
     else:
         extra = []
 
     markup = InlineKeyboardMarkup(
         [
             [  # First row
-                InlineKeyboardButton("send as document", callback_data="document"),
-                InlineKeyboardButton("send as video", callback_data="video"),
-                InlineKeyboardButton("send as audio", callback_data="audio"),
+                InlineKeyboardButton("الإرسال كملف", callback_data="document"),
+                InlineKeyboardButton("الإرسال كفيديو", callback_data="video"),
+                InlineKeyboardButton("الإرسال كصوت", callback_data="audio"),
             ],
             [  # second row
-                InlineKeyboardButton("High Quality", callback_data="high"),
-                InlineKeyboardButton("Medium Quality", callback_data="medium"),
-                InlineKeyboardButton("Low Quality", callback_data="low"),
+                InlineKeyboardButton("جودة عالية", callback_data="high"),
+                InlineKeyboardButton("جودة متوسطة", callback_data="medium"),
+                InlineKeyboardButton("جودة منخفضه", callback_data="low"),
             ],
             extra,
         ]
