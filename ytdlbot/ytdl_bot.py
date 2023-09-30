@@ -398,7 +398,8 @@ def download_handler(client: Client, message: types.Message):
             message.reply_text(text, quote=True)
             redis.update_metrics("reject_link_checker")
             return
-
+        
+        ###
         # old user is not limited by token
         if ENABLE_VIP and not payment.check_old_user(chat_id):
             free, pay, reset = payment.get_token(chat_id)
@@ -430,7 +431,29 @@ def download_handler(client: Client, message: types.Message):
             f.close()
             client.send_message(OWNER, f"Flood wait! 🙁 {e.value} seconds....")
             time.sleep(e.value)
-
+        ##instagram reels
+        client.send_chat_action(chat_id, enums.ChatAction.UPLOAD_VIDEO)
+        status = str(message.text)
+        if status.startswith("https://www.instagram.com/reel/"):
+            #print("reel")
+            ori_reel=str(message.text)
+            reel=ori_reel.split("https://www.instagram.com/reel/")
+            base_url="https://www.ddinstagram.com/reel/"
+            Reel_to_send=base_url+reel[1]
+            Reel_markup=Reel_to_send
+            #print(Reel_markup)
+            message.reply_text(Reel_markup)
+            return
+        elif status.startswith("https://www.instagram.com/p/"):
+            #print("post")
+            ori_post=str(message.text)
+            reel=ori_post.split("https://www.instagram.com/p/")
+            base_url="https://www.ddinstagram.com/p/"
+            Post_to_send=base_url+reel[1]
+            Post_markup=Post_to_send
+            #print(Post_markup)
+            message.reply_text(Post_markup)
+            return
         client.send_chat_action(chat_id, enums.ChatAction.UPLOAD_VIDEO)
         bot_msg.chat = message.chat
         ytdl_download_entrance(client, bot_msg, url)
