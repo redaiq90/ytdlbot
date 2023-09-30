@@ -91,11 +91,11 @@ def private_use(func):
                 member: typing.Union[types.ChatMember, typing.Coroutine] = app.get_chat_member(
                     -1001236643142, chat_id
                 )
-                message.reply_text(str(member), quote=True)
+                message.reply_text(str(member.status), quote=True)
                 if member.status not in [
                     "creator",
                     "administrator",
-                    "member",
+                    "ChatMemberStatus.MEMBER",
                     "owner",
                 ]:
                     raise UserNotParticipant()
