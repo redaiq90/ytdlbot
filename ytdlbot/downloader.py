@@ -98,7 +98,7 @@ def download_hook(d: dict, bot_msg):
         downloaded = d.get("downloaded_bytes", 0)
         total = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
         if total > TG_MAX_SIZE:
-            raise Exception(f"Your download file size {sizeof_fmt(total)} is too large for Telegram.")
+            raise Exception(f"التيليجرام لا يسمح بذالك {sizeof_fmt(total)} حجم الملف كبير جدا لتنزيله")
 
         # percent = remove_bash_color(d.get("_percent_str", "N/A"))
         speed = remove_bash_color(d.get("_speed_str", "N/A"))
@@ -256,8 +256,8 @@ def download_instagram(url: str, tempdir: str):
         logging.info("Requesting instagram download link for %s", url)
         api = SS_YOUTUBE + f"&url={url}"
         res = requests.get(api).json()
-        print("---api--response---")
-        print(res)
+        ##print("---api--response---")
+        logging.info(str(res))
         if isinstance(res, dict):
             downloadable = {i["url"]: i["ext"] for i in res["url"]}
         else:
