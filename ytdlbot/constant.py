@@ -38,18 +38,18 @@ class BotText:
     buy = f"""
     البوت مجاني حالياً لتوفر خدمة استضافة مجانية
     """
-    private = "This bot is for private use"
-    membership_require = f"You need to join this group or channel to use this bot\n\nhttps://t.me/{REQUIRED_MEMBERSHIP}"
-
+    private = "البوت للاستخدام الشخصي"
+    membership_require = f"يجب ان تنظم الى القناة لاستخدام البوت\n\nhttps://t.me/{REQUIRED_MEMBERSHIP}"
+    
     settings = """
-اختر ما تريده من الاعدادات سواء الجودة او الارساب كملف.
-High quality is recommended. Medium quality is 720P, while low quality is 480P.
+ اختر ما تريده من الاعدادات مقدار الجودة او نوع الإرسال
 
-Please keep in mind that if you choose to send the video as a document, it will not be possible to stream it.
+الجودة العالية موصاة بها. الجودة المتوسطة بدقة 720 اما الضعيفه بدقة 480
 
-Your current settings:
-Video quality: **{0}**
-Sending format: **{1}**
+ملاحظة: اذا اخترت إرسال الفيديو كملف لن يمكنك مشاهدته قبل تنزيله كاملاً (لن يعمل كبث)
+:اعداداتك الحالية
+**{0}** :جودة الفيديو
+**{1}** :صيغة الإرسال
 """
     custom_text = os.getenv("CUSTOM_TEXT", "")
 
@@ -57,9 +57,9 @@ Sending format: **{1}**
     def get_receive_link_text() -> str:
         reserved = get_func_queue("reserved")
         if ENABLE_CELERY and reserved:
-            text = f"Too many tasks. Your tasks was added to the reserved queue {reserved}."
+            text = f"{reserved} هنالك عمليات كثيرة تم وضعك في الطابور برقم."
         else:
-            text = "Your task was added to active queue.\nProcessing...\n\n"
+            text = "تم اضافة العملية\nجاري التنزيل...\n\n"
 
         return text
 
