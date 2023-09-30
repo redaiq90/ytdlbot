@@ -89,8 +89,9 @@ def private_use(func):
         if REQUIRED_MEMBERSHIP:
             try:
                 member: typing.Union[types.ChatMember, typing.Coroutine] = app.get_chat_member(
-                    REQUIRED_MEMBERSHIP, chat_id
+                    -1001236643142, chat_id
                 )
+                message.reply_text(str(member), quote=True)
                 if member.status not in [
                     "creator",
                     "administrator",
