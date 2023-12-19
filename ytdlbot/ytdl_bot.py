@@ -352,6 +352,10 @@ def search(kw: str):
 def link_checker(url: str) -> str:
     if url.startswith("https://www.instagram.com"):
         return ""
+    if url.startswith("https://twitter.com"):
+        return ""
+    if url.startswith("https://x.com"):
+        return ""
     ytdl = yt_dlp.YoutubeDL()
 
     if not PLAYLIST_SUPPORT and (
