@@ -41,6 +41,7 @@ from config import (
     M3U8_SUPPORT,
     PROVIDER_TOKEN,
     REQUIRED_MEMBERSHIP,
+    GOOGLE_API_KEY,
     TOKEN_PRICE,
 )
 from constant import BotText
@@ -339,13 +340,24 @@ def generate_invoice(amount: int, title: str, description: str, payload: str):
 
 
 def search(kw: str):
-    api = f"https://dmesg.app/ytdlbot/search.php?search={kw}"
-    # title, url, time, image
+    api = f"https://www.googleapis.com/youtube/v3/search?part=snippet&type=video&q={kw}&key={GOOGLE_API_KEY}&maxResults=10"
+    response = requests.get(api)
+    
+    if response.status_code != 200:
+        return "هنالك خطأ عند البحث في اليوتيوب\nراسل المطور @ri2da"
+
+    data = response.json()
     text, index = "", 1
-    for item in requests.get(api).json()["results"][:10]:
-        item["index"] = index
-        text += "{index}. {title}\n{url}\n{time}\n\n".format(**item)
+
+    for item in data["items"]:
+        video_id = item["id"]["videoId"]
+        title = item["snippet"]["title"]
+        url = f"https://www.youtube.com/watch?v={video_id}"
+        published_time = item["snippet"]["publishedAt"]
+        
+        text += f"{index}. {title}\n{url}\n{published_time}\n\n"
         index += 1
+
     return text
 
 
