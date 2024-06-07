@@ -329,7 +329,8 @@ def upload_processor(client, bot_msg, url, vp_or_fid: typing.Union[str, list]):
 
     settings = payment.get_user_settings(chat_id)
     if ARCHIVE_ID and isinstance(vp_or_fid, pathlib.Path):
-        chat_id = ARCHIVE_ID
+        # chat_id = ARCHIVE_ID
+        archive = True
 
     if settings[2] == "document":
         logging.info("Sending as document")
