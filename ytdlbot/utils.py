@@ -21,7 +21,10 @@ import uuid
 from datetime import datetime
 
 import coloredlogs
-import ffmpeg
+from moviepy.editor import VideoFileClip
+import logging
+import pathlib
+import uuid
 import psutil
 
 from flower_tasks import app
@@ -81,22 +84,24 @@ def adjust_formats(user_id: int, url: str, formats: list, hijack=None):
 
 def get_metadata(video_path):
     width, height, duration = 1280, 720, 0
+    thumb = None
     try:
-        video_streams = ffmpeg.probe(video_path, select_streams="v")
-        for item in video_streams.get("streams", []):
-            height = item["height"]
-            width = item["width"]
-        duration = int(float(video_streams["format"]["duration"]))
+        clip = VideoFileClip(video_path)
+        width, height = clip.size
+        duration = int(clip.duration)
     except Exception as e:
         logging.error(e)
     try:
-        thumb = pathlib.Path(video_path).parent.joinpath(f"{uuid.uuid4().hex}-thunmnail.png").as_posix()
-        ffmpeg.input(video_path, ss=duration / 2).filter("scale", width, -1).output(thumb, vframes=1).run()
-    except ffmpeg._run.Error:
-        thumb = None
+        thumb_path = pathlib.Path(video_path).parent.joinpath(f"{uuid.uuid4().hex}-thumbnail.png").as_posix()
+        midpoint_frame = clip.get_frame(clip.duration / 2)
+        from PIL import Image
+        thumb = Image.fromarray(midpoint_frame)
+        thumb.save(thumb_path)
+        thumb = thumb_path
+    except Exception as e:
+        logging.error(e)
 
     return dict(height=height, width=width, duration=duration, thumb=thumb)
-
 
 def current_time(ts=None):
     return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(ts))
