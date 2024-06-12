@@ -1,4 +1,6 @@
 pyrogram==2.0.106
+moviepy
+Pillow
 Flask
 flask_restful
 tgcrypto==1.2.5
